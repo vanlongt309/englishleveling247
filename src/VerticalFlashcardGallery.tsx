@@ -1,12 +1,12 @@
 import { useRef, useState, useEffect } from 'react';
 
-// Dữ liệu mẫu cho flashcard
+// Sample data for flashcards
 const sampleFlashcards = [
   {
     id: 1,
     imageUrl: "https://placehold.co/1024x1536/E0E0E0/333333?text=Flashcard+1",
     isFavorite: false,
-    // Thêm thông tin từ vựng
+    // Add vocabulary information
     vocabulary: {
       word: "Serendipity",
       meaning: "Tình cờ tìm thấy điều tốt đẹp khi không tìm kiếm nó",
@@ -75,7 +75,7 @@ const sampleFlashcards = [
   }
 ];
 
-// Animation cho toast và settings modal
+// Animation styles for toast and settings modal
 const animations = `
   @keyframes fadeInOut {
     0% { opacity: 0; transform: translateY(-10px); }
@@ -99,13 +99,13 @@ const animations = `
     100% { transform: scale(1); opacity: 1; }
   }
 
-  /* Animation mới cho backdrop */
+  /* Animation for backdrop */
   @keyframes modalBackdropIn {
     0% { opacity: 0; }
-    100% { opacity: 0.4; } /* Sử dụng giá trị 0.4 theo yêu cầu */
+    100% { opacity: 0.4; } /* Use 0.4 opacity as requested */
   }
 
-  /* Animation mới cho modal (được yêu cầu thêm nhưng không dùng trong code settings mới) */
+  /* Animation for modal (added but not used in the new settings code) */
   @keyframes modalIn {
     0% { opacity: 0; transform: scale(0.95) translateY(10px); }
     100% { opacity: 1; transform: scale(1) translateY(0); }
@@ -144,12 +144,12 @@ export default function VerticalFlashcardGallery() {
   // Add this after the visualStyle state
   const [imageDetail, setImageDetail] = useState('basic'); // 'basic', 'phrase', or 'example'
 
-  // Thêm state để quản lý modal từ vựng
+  // State to manage vocabulary modal
   const [showVocabDetail, setShowVocabDetail] = useState(false);
   const [selectedVocab, setSelectedVocab] = useState(null);
 
 
-  // Lọc flashcard dựa trên tab đang active
+  // Filter flashcards based on active tab
   const filteredFlashcards = activeTab === 'collection'
     ? flashcards
     : flashcards.filter(card => card.isFavorite);
@@ -157,6 +157,7 @@ export default function VerticalFlashcardGallery() {
   const favoriteCount = flashcards.filter(card => card.isFavorite).length;
   const totalFlashcards = flashcards.length;
 
+  // Toggle favorite status for a flashcard
   const toggleFavorite = (id) => {
     setFlashcards(prevCards =>
       prevCards.map(card =>
@@ -166,51 +167,30 @@ export default function VerticalFlashcardGallery() {
       )
     );
 
-    // Hiển thị toast thông báo
+    // Show favorite status toast
     setShowFavoriteToast(true);
     setTimeout(() => setShowFavoriteToast(false), 2000);
   };
 
-  // Tạo hàm để mở modal từ vựng
+  // Function to open vocabulary detail modal
   const openVocabDetail = (card) => {
     setSelectedVocab(card.vocabulary);
     setShowVocabDetail(true);
   };
 
-  // Loại bỏ useEffect để đóng settings khi click ra ngoài
-  // useEffect(() => {
-  //   const handleClickOutside = (event) => {
-  //     const settingsPanel = document.getElementById('settings-panel');
-  //     const settingsButton = document.getElementById('settings-button');
-
-  //     // Kiểm tra xem click có nằm ngoài panel và không phải là nút mở panel hay không
-  //     if (showSettings && settingsPanel && !settingsPanel.contains(event.target) &&
-  //         settingsButton && !settingsButton.contains(event.target)) {
-  //       setShowSettings(false);
-  //     }
-  //   };
-
-  //   if (showSettings) {
-  //     document.addEventListener('mousedown', handleClickOutside);
-  //   }
-
-  //   return () => {
-  //     document.removeEventListener('mousedown', handleClickOutside);
-  //   };
-  // }, [showSettings]);
-
+  // Removed useEffect to close settings on outside click as per user's code
 
   return (
     <div className="flex flex-col items-center w-full bg-gray-100 min-h-screen font-sans">
       {/* Inject CSS animations */}
       <style>{animations}</style>
 
-      {/* Header với Tabs và Settings */}
+      {/* Header with Tabs and Settings */}
       <div className="w-full max-w-6xl px-4 py-6">
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-2xl font-bold text-gray-800">Flashcard Gallery</h1>
 
-          {/* Setting Button với hiệu ứng hover */}
+          {/* Setting Button with hover effect */}
           <div
             id="settings-button"
             className={`relative flex items-center justify-center p-2 bg-white rounded-lg shadow-sm border transition-all duration-300 cursor-pointer ${isSettingsHovered || showSettings ? 'border-indigo-300 bg-indigo-50 ring-2 ring-indigo-100' : 'border-gray-100'}`}
@@ -287,7 +267,7 @@ export default function VerticalFlashcardGallery() {
         </div>
       </div>
 
-      {/* Main Content - Với chế độ layout 1 cột hoặc 2 cột */}
+      {/* Main Content - With 1 or 2 column layout mode */}
       <div className="w-full max-w-6xl px-4 py-4">
         {filteredFlashcards.length > 0 ? (
           <div
@@ -304,14 +284,14 @@ export default function VerticalFlashcardGallery() {
                 key={card.id}
                 className={`${layoutMode === 'double' ? 'w-full max-w-full' : 'w-full'} flex flex-col items-center bg-white rounded-xl shadow-xl overflow-hidden relative group ${layoutMode === 'single' ? 'mb-8' : 'mb-0'}`}
               >
-                {/* Hiệu ứng hover cho flashcard */}
+                {/* Hover effect for flashcard */}
                 <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-300"></div>
 
-                {/* Icon trái tim - Favorite/Unfavorite - Kích thước và padding thay đổi tùy theo layout */}
+                {/* Heart Icon - Favorite/Unfavorite - Size and padding change based on layout */}
                 <button
                   className={`absolute top-3 right-3 ${layoutMode === 'double' ? 'p-1.5' : 'p-2'} rounded-full bg-white bg-opacity-70 hover:bg-opacity-90 transition-all duration-300 z-10 shadow-md flex items-center justify-center ${card.isFavorite ? 'scale-110' : 'scale-100'}`}
                   onClick={() => toggleFavorite(card.id)}
-                  aria-label={card.isFavorite ? "Xóa khỏi yêu thích" : "Thêm vào yêu thích"}
+                  aria-label={card.isFavorite ? "Remove from favorites" : "Add to favorites"}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -331,7 +311,7 @@ export default function VerticalFlashcardGallery() {
                   </svg>
                 </button>
 
-                {/* Container giữ tỷ lệ hình ảnh với hiệu ứng phong cách */}
+                {/* Image aspect ratio container with style effects */}
                 <div className="w-full">
                   <div className={`relative w-full ${
                     // Apply frame styles based on visualStyle
@@ -356,7 +336,7 @@ export default function VerticalFlashcardGallery() {
                       <div className="absolute inset-0 shadow-inner pointer-events-none"></div>
                     )}
 
-                    {/* Cập nhật phần hiển thị flashcard để thêm sự kiện click */}
+                    {/* Flashcard image updated to include click event */}
                     <img
                       src={card.imageUrl}
                       alt={`Flashcard ${card.id}`}
@@ -365,39 +345,20 @@ export default function VerticalFlashcardGallery() {
                         visualStyle === 'comic' ? 'contrast-125 brightness-105' :
                         visualStyle === 'realistic' ? 'saturate-105 contrast-110 shadow-md' :
                         ''
-                      } cursor-pointer`} // Thêm cursor-pointer
+                      } cursor-pointer`} // Added cursor-pointer
                       style={{
                         aspectRatio: '1024/1536',
                         filter: visualStyle === 'comic' ? 'grayscale(0.1)' : 'none'
                       }}
-                      onClick={() => openVocabDetail(card)} // Thêm sự kiện click
+                      onClick={() => openVocabDetail(card)} // Added click event
                       onError={(e) => {
                         e.target.onerror = null;
                         e.target.src = `https://placehold.co/1024x1536/E0E0E0/333333?text=Image+Error`;
                       }}
                     />
 
-                    {/* Image Detail Overlay based on setting */}
-                    {imageDetail !== 'basic' && (
-                      <div className={`absolute bottom-0 left-0 right-0 p-3 ${
-                        imageDetail === 'phrase'
-                          ? 'bg-purple-900 bg-opacity-70'
-                          : 'bg-teal-900 bg-opacity-70'
-                      }`}>
-                         {/* Hiển thị thông tin từ vựng nếu có và imageDetail không phải 'basic' */}
-                         {card.vocabulary && imageDetail === 'phrase' && (
-                          <p className="text-white font-medium text-center">
-                            {card.vocabulary.phrases[0] || 'Không có cụm từ mẫu'} {/* Hiển thị cụm từ đầu tiên hoặc thông báo */}
-                          </p>
-                        )}
-                        {card.vocabulary && imageDetail === 'example' && (
-                          <div className="text-white">
-                            <p className="font-medium mb-1">Ví dụ:</p>
-                            <p className="text-sm opacity-90">{card.vocabulary.example || 'Không có ví dụ'}</p>
-                          </div>
-                        )}
-                      </div>
-                    )}
+                    {/* Image Detail Overlay based on setting - Removed the overlay */}
+                    {/* The overlay for image detail is now completely removed */}
 
                   </div>
                 </div>
@@ -405,7 +366,7 @@ export default function VerticalFlashcardGallery() {
             ))}
           </div>
         ) : (
-          // Hiển thị trạng thái trống cho tab Favorite nếu không có item nào
+          // Display empty state for Favorite tab if no items
           <div className="flex flex-col items-center justify-center py-16 text-center">
             <div className="bg-pink-50 p-6 rounded-full mb-4">
               <svg
@@ -427,11 +388,11 @@ export default function VerticalFlashcardGallery() {
       {showSettings && (
         <>
           {/* Overlay */}
-          {/* Loại bỏ sự kiện onClick để ngăn đóng popup khi click vào overlay */}
+          {/* Removed onClick event to prevent closing popup when clicking overlay */}
           <div
             className="fixed inset-0 bg-black bg-opacity-40 z-40 transition-opacity duration-300"
             style={{ animation: 'modalBackdropIn 0.3s ease-out forwards' }}
-            // onClick={() => setShowSettings(false)} // Đã loại bỏ dòng này
+            // onClick={() => setShowSettings(false)} // Removed this line
           ></div>
 
           {/* Modal Popup */}
