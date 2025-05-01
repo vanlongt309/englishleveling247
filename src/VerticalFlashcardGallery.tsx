@@ -75,6 +75,17 @@ const sampleFlashcards = [
   }
 ];
 
+// Mảng chứa URLs của các hình ảnh ví dụ (kích thước 1024x1536px)
+const exampleImages = [
+  "https://placehold.co/1024x1536/FF5733/FFFFFF?text=Example+1", // Placeholder example images
+  "https://placehold.co/1024x1536/33FF57/FFFFFF?text=Example+2",
+  "https://placehold.co/1024x1536/3357FF/FFFFFF?text=Example+3",
+  "https://placehold.co/1024x1536/FF33A1/FFFFFF?text=Example+4",
+  "https://placehold.co/1024x1536/A133FF/FFFFFF?text=Example+5",
+  // Thêm nhiều hình ảnh khác nếu cần
+];
+
+
 // Animation styles for toast and settings modal
 const animations = `
   @keyframes fadeInOut {
@@ -148,6 +159,8 @@ export default function VerticalFlashcardGallery() {
   const [showVocabDetail, setShowVocabDetail] = useState(false);
   const [selectedVocab, setSelectedVocab] = useState(null);
 
+  // State to manage the selected card for detail view
+  const [selectedCard, setSelectedCard] = useState(null);
 
   // Filter flashcards based on active tab
   const filteredFlashcards = activeTab === 'collection'
@@ -174,11 +187,180 @@ export default function VerticalFlashcardGallery() {
 
   // Function to open vocabulary detail modal
   const openVocabDetail = (card) => {
-    setSelectedVocab(card.vocabulary);
+    setSelectedCard(card); // Set the selected card
     setShowVocabDetail(true);
   };
 
   // Removed useEffect to close settings on outside click as per user's code
+
+  // Function to render modal content based on detailType
+  const renderModalContent = () => {
+    if (!selectedCard) return null;
+
+    // Find the original index of the selected card in the flashcards array
+    const originalIndex = flashcards.findIndex(card => card.id === selectedCard.id);
+
+    if (imageDetail === 'basic' && selectedCard.imageUrl) {
+      return (
+        <div className="flex justify-center items-center h-full p-4"> {/* Added padding */}
+          <img
+            src={selectedCard.imageUrl}
+            alt="Card"
+            className="max-h-full max-w-full object-contain rounded-lg shadow-md" // Added rounded corners and shadow
+          />
+        </div>
+      );
+    } else if (imageDetail === 'example') {
+      // Lấy hình ảnh ví dụ dựa trên index của card trong mảng cards
+      // Hoặc bạn có thể sử dụng một logic khác để chọn hình ảnh ví dụ
+      const exampleIndex = originalIndex % exampleImages.length;
+      const exampleImageUrl = exampleImages[exampleIndex];
+
+      return (
+        <div className="flex justify-center items-center h-full p-4"> {/* Added padding */}
+          <img
+            src={exampleImageUrl}
+            alt="Example"
+            className="max-h-full max-w-full object-contain rounded-lg shadow-md" // Added rounded corners and shadow
+            // Removed fixed width and height to make it responsive
+          />
+        </div>
+      );
+    } else if (imageDetail === 'phrase' && selectedCard.vocabulary?.phrases) {
+       return (
+        <div className="p-5 overflow-y-auto flex-grow">
+          <h3 className="text-xl font-bold text-gray-800 mb-4">{selectedCard.vocabulary.word}</h3>
+           {/* Cụm từ */}
+           <div className="mb-5">
+             <div className="inline-block bg-purple-50 rounded-full px-3 py-1 text-xs font-semibold text-purple-600 mb-2">
+               Cụm từ phổ biến
+             </div>
+             <div className="flex flex-wrap gap-2">
+               {selectedCard.vocabulary.phrases.map((phrase, index) => (
+                 <span key={index} className="bg-purple-50 text-purple-700 px-2 py-1 rounded text-sm">
+                   {phrase}
+                 </span>
+               ))}
+             </div>
+           </div>
+            {/* You could add more vocabulary details here if needed */}
+            <div className="mb-5">
+              <div className="inline-block bg-blue-50 rounded-full px-3 py-1 text-xs font-semibold text-blue-600 mb-2">
+                Nghĩa
+              </div>
+              <p className="text-gray-800">{selectedCard.vocabulary.meaning}</p>
+            </div>
+            <div className="mb-5">
+              <div className="inline-block bg-green-50 rounded-full px-3 py-1 text-xs font-semibold text-green-600 mb-2">
+                Ví dụ
+              </div>
+               <p className="text-gray-700 italic bg-green-50 p-3 rounded-lg border-l-4 border-green-300">
+                "{selectedCard.vocabulary.example}"
+              </p>
+            </div>
+        </div>
+       );
+    }
+    else {
+      // Default to text detail if image or example not available or basic/example not selected
+      return (
+        <div className="p-5 overflow-y-auto flex-grow">
+          <h3 className="text-xl font-bold text-gray-800 mb-4">{selectedCard.vocabulary.word}</h3>
+          {/* Nghĩa */}
+          <div className="mb-5">
+            <div className="inline-block bg-blue-50 rounded-full px-3 py-1 text-xs font-semibold text-blue-600 mb-2">
+              Nghĩa
+            </div>
+            <p className="text-gray-800">{selectedCard.vocabulary.meaning}</p>
+          </div>
+
+          {/* Ví dụ */}
+          <div className="mb-5">
+            <div className="inline-block bg-green-50 rounded-full px-3 py-1 text-xs font-semibold text-green-600 mb-2">
+              Ví dụ
+            </div>
+            <p className="text-gray-700 italic bg-green-50 p-3 rounded-lg border-l-4 border-green-300">
+              "{selectedCard.vocabulary.example}"
+            </p>
+          </div>
+
+          {/* Cụm từ */}
+          <div className="mb-5">
+            <div className="inline-block bg-purple-50 rounded-full px-3 py-1 text-xs font-semibold text-purple-600 mb-2">
+              Cụm từ phổ biến
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {selectedCard.vocabulary.phrases.map((phrase, index) => (
+                <span key={index} className="bg-purple-50 text-purple-700 px-2 py-1 rounded text-sm">
+                  {phrase}
+                </span>
+              ))}
+            </div>
+          </div>
+
+           {/* Phổ biến */}
+           <div className="mb-5">
+             <div className="inline-block bg-amber-50 rounded-full px-3 py-1 text-xs font-semibold text-amber-600 mb-2">
+               Mức độ phổ biến
+             </div>
+             <div className="flex items-center">
+               <span className={`
+                 px-2 py-1 rounded-lg text-sm font-medium
+                 ${selectedCard.vocabulary.popularity === "Cao" ? "bg-green-100 text-green-700" :
+                   selectedCard.vocabulary.popularity === "Trung bình" ? "bg-amber-100 text-amber-700" :
+                   "bg-red-100 text-red-700"}
+               `}>
+                 {selectedCard.vocabulary.popularity}
+               </span>
+
+               {/* Hiển thị biểu đồ mức độ phổ biến */}
+               <div className="ml-3 flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
+                 <div
+                   className={`h-full rounded-full ${
+                     selectedCard.vocabulary.popularity === "Cao" ? "bg-green-500 w-4/5" :
+                     selectedCard.vocabulary.popularity === "Trung bình" ? "bg-amber-500 w-1/2" :
+                     "bg-red-500 w-1/5"
+                   }`}
+                 ></div>
+               </div>
+             </div>
+           </div>
+
+           {/* Synonyms & Antonyms */}
+           <div className="grid grid-cols-2 gap-4">
+             {/* Từ đồng nghĩa */}
+             <div>
+               <div className="inline-block bg-indigo-50 rounded-full px-3 py-1 text-xs font-semibold text-indigo-600 mb-2">
+                 Từ đồng nghĩa
+               </div>
+               <div className="flex flex-col gap-1">
+                 {selectedCard.vocabulary.synonyms.map((word, index) => (
+                   <span key={index} className="text-gray-700 text-sm bg-indigo-50 px-2 py-1 rounded">
+                     {word}
+                   </span>
+                 ))}
+               </div>
+             </div>
+
+             {/* Từ trái nghĩa */}
+             <div>
+               <div className="inline-block bg-pink-50 rounded-full px-3 py-1 text-xs font-semibold text-pink-600 mb-2">
+                 Từ trái nghĩa
+               </div>
+               <div className="flex flex-col gap-1">
+                 {selectedCard.vocabulary.antonyms.map((word, index) => (
+                   <span key={index} className="text-gray-700 text-sm bg-pink-50 px-2 py-1 rounded">
+                     {word}
+                   </span>
+                 ))}
+               </div>
+             </div>
+           </div>
+        </div>
+      );
+    }
+  };
+
 
   return (
     <div className="flex flex-col items-center w-full bg-gray-100 min-h-screen font-sans">
@@ -560,7 +742,7 @@ export default function VerticalFlashcardGallery() {
                       <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
                       <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd" />
                     </svg>
-                    Chi tiết hình ảnh
+                    Chi tiết hiển thị khi click ảnh
                   </h4>
 
                   {/* Detail Level Buttons */}
@@ -581,7 +763,7 @@ export default function VerticalFlashcardGallery() {
                           <path d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4z" />
                         </svg>
                       </div>
-                      <span className={`text-xs text-center ${imageDetail === 'basic' ? 'text-indigo-700 font-medium' : 'text-gray-600'}`}>Cơ bản</span> {/* Changed text-sm to text-xs */}
+                      <span className={`text-xs text-center ${imageDetail === 'basic' ? 'text-indigo-700 font-medium' : 'text-gray-600'}`}>Ảnh gốc</span> {/* Changed text-sm to text-xs */}
                     </div>
 
                     {/* Phrase Detail */}
@@ -601,7 +783,7 @@ export default function VerticalFlashcardGallery() {
                           <path d="M11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM14 11a1 1 0 011 1v1h1a1 1 0 110 2h-1v1a1 1 0 11-2 0v-1h-1a1 1 0 110-2h1v-1a1 1 0 011-1z" />
                         </svg>
                       </div>
-                      <span className={`text-xs text-center ${imageDetail === 'phrase' ? 'text-purple-700 font-medium' : 'text-gray-600'}`}>Cụm Từ</span> {/* Changed text-sm to text-xs */}
+                      <span className={`text-xs text-center ${imageDetail === 'phrase' ? 'text-purple-700 font-medium' : 'text-gray-600'}`}>Cơ Bản</span> {/* Changed text-sm to text-xs, and text to "Cơ Bản" */}
                     </div>
 
                     {/* Example Detail */}
@@ -675,7 +857,7 @@ export default function VerticalFlashcardGallery() {
       )}
 
       {/* Modal chi tiết từ vựng */}
-      {showVocabDetail && selectedVocab && (
+      {showVocabDetail && selectedCard && ( // Changed selectedVocab to selectedCard
         <>
           {/* Overlay */}
           <div
@@ -693,7 +875,13 @@ export default function VerticalFlashcardGallery() {
               {/* Header */}
               <div className="bg-gradient-to-r from-indigo-600 to-blue-600 px-5 py-4 flex-shrink-0">
                 <div className="flex justify-between items-center">
-                  <h3 className="text-lg font-bold text-white">{selectedVocab.word}</h3>
+                  <h3 className="text-lg font-bold text-white">
+                     {/* Render header based on imageDetail */}
+                     {imageDetail === 'basic' && 'Ảnh Gốc'}
+                     {imageDetail === 'example' && 'Hình Ảnh Ví Dụ'}
+                     {imageDetail === 'phrase' && selectedCard.vocabulary?.word} {/* Show word for phrase detail */}
+                     {imageDetail !== 'basic' && imageDetail !== 'example' && imageDetail !== 'phrase' && selectedCard.vocabulary?.word} {/* Default to word */}
+                  </h3>
                   <button
                     onClick={() => setShowVocabDetail(false)}
                     className="text-white hover:bg-white hover:bg-opacity-20 rounded-full p-1.5 transition-colors"
@@ -705,102 +893,11 @@ export default function VerticalFlashcardGallery() {
                 </div>
               </div>
 
-              {/* Body */}
-              <div className="p-5 overflow-y-auto flex-grow">
-                {/* Nghĩa */}
-                <div className="mb-5">
-                  <div className="inline-block bg-blue-50 rounded-full px-3 py-1 text-xs font-semibold text-blue-600 mb-2">
-                    Nghĩa
-                  </div>
-                  <p className="text-gray-800">{selectedVocab.meaning}</p>
-                </div>
-
-                {/* Ví dụ */}
-                <div className="mb-5">
-                  <div className="inline-block bg-green-50 rounded-full px-3 py-1 text-xs font-semibold text-green-600 mb-2">
-                    Ví dụ
-                  </div>
-                  <p className="text-gray-700 italic bg-green-50 p-3 rounded-lg border-l-4 border-green-300">
-                    "{selectedVocab.example}"
-                  </p>
-                </div>
-
-                {/* Cụm từ */}
-                <div className="mb-5">
-                  <div className="inline-block bg-purple-50 rounded-full px-3 py-1 text-xs font-semibold text-purple-600 mb-2">
-                    Cụm từ phổ biến
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {selectedVocab.phrases.map((phrase, index) => (
-                      <span key={index} className="bg-purple-50 text-purple-700 px-2 py-1 rounded text-sm">
-                        {phrase}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Phổ biến */}
-                <div className="mb-5">
-                  <div className="inline-block bg-amber-50 rounded-full px-3 py-1 text-xs font-semibold text-amber-600 mb-2">
-                    Mức độ phổ biến
-                  </div>
-                  <div className="flex items-center">
-                    <span className={`
-                      px-2 py-1 rounded-lg text-sm font-medium
-                      ${selectedVocab.popularity === "Cao" ? "bg-green-100 text-green-700" :
-                        selectedVocab.popularity === "Trung bình" ? "bg-amber-100 text-amber-700" :
-                        "bg-red-100 text-red-700"}
-                    `}>
-                      {selectedVocab.popularity}
-                    </span>
-
-                    {/* Hiển thị biểu đồ mức độ phổ biến */}
-                    <div className="ml-3 flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
-                      <div
-                        className={`h-full rounded-full ${
-                          selectedVocab.popularity === "Cao" ? "bg-green-500 w-4/5" :
-                          selectedVocab.popularity === "Trung bình" ? "bg-amber-500 w-1/2" :
-                          "bg-red-500 w-1/5"
-                        }`}
-                      ></div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Synonyms & Antonyms */}
-                <div className="grid grid-cols-2 gap-4">
-                  {/* Từ đồng nghĩa */}
-                  <div>
-                    <div className="inline-block bg-indigo-50 rounded-full px-3 py-1 text-xs font-semibold text-indigo-600 mb-2">
-                      Từ đồng nghĩa
-                    </div>
-                    <div className="flex flex-col gap-1">
-                      {selectedVocab.synonyms.map((word, index) => (
-                        <span key={index} className="text-gray-700 text-sm bg-indigo-50 px-2 py-1 rounded">
-                          {word}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Từ trái nghĩa */}
-                  <div>
-                    <div className="inline-block bg-pink-50 rounded-full px-3 py-1 text-xs font-semibold text-pink-600 mb-2">
-                      Từ trái nghĩa
-                    </div>
-                    <div className="flex flex-col gap-1">
-                      {selectedVocab.antonyms.map((word, index) => (
-                        <span key={index} className="text-gray-700 text-sm bg-pink-50 px-2 py-1 rounded">
-                          {word}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
+              {/* Body - Render content based on renderModalContent function */}
+              {renderModalContent()}
 
               {/* Footer */}
-              <div className="border-t border-gray-100 p-4 bg-gray-50">
+              <div className="border-t border-gray-100 p-4 bg-gray-50 flex-shrink-0"> {/* Added flex-shrink-0 */}
                 <button
                   className="w-full py-2 bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white font-medium rounded-lg transition-all duration-300 flex items-center justify-center"
                   onClick={() => setShowVocabDetail(false)}
