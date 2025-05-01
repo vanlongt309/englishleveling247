@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-// Xóa import từ lucide-react như yêu cầu
 
 // Component IconSVG mới để chứa các biểu tượng SVG
 const IconSVG = ({ icon, size = 24, className = "", ...props }) => {
