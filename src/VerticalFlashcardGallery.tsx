@@ -177,28 +177,28 @@ export default function VerticalFlashcardGallery() {
     setShowVocabDetail(true);
   };
 
+  // Loại bỏ useEffect để đóng settings khi click ra ngoài
+  // useEffect(() => {
+  //   const handleClickOutside = (event) => {
+  //     const settingsPanel = document.getElementById('settings-panel');
+  //     const settingsButton = document.getElementById('settings-button');
 
-  // Đóng settings khi click ra ngoài
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      const settingsPanel = document.getElementById('settings-panel');
-      const settingsButton = document.getElementById('settings-button');
+  //     // Kiểm tra xem click có nằm ngoài panel và không phải là nút mở panel hay không
+  //     if (showSettings && settingsPanel && !settingsPanel.contains(event.target) &&
+  //         settingsButton && !settingsButton.contains(event.target)) {
+  //       setShowSettings(false);
+  //     }
+  //   };
 
-      // Kiểm tra xem click có nằm ngoài panel và không phải là nút mở panel hay không
-      if (showSettings && settingsPanel && !settingsPanel.contains(event.target) &&
-          settingsButton && !settingsButton.contains(event.target)) {
-        setShowSettings(false);
-      }
-    };
+  //   if (showSettings) {
+  //     document.addEventListener('mousedown', handleClickOutside);
+  //   }
 
-    if (showSettings) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
+  //   return () => {
+  //     document.removeEventListener('mousedown', handleClickOutside);
+  //   };
+  // }, [showSettings]);
 
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [showSettings]);
 
   return (
     <div className="flex flex-col items-center w-full bg-gray-100 min-h-screen font-sans">
@@ -427,10 +427,11 @@ export default function VerticalFlashcardGallery() {
       {showSettings && (
         <>
           {/* Overlay */}
+          {/* Loại bỏ sự kiện onClick để ngăn đóng popup khi click vào overlay */}
           <div
             className="fixed inset-0 bg-black bg-opacity-40 z-40 transition-opacity duration-300"
             style={{ animation: 'modalBackdropIn 0.3s ease-out forwards' }}
-            onClick={() => setShowSettings(false)}
+            // onClick={() => setShowSettings(false)} // Đã loại bỏ dòng này
           ></div>
 
           {/* Modal Popup */}
