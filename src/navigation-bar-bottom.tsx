@@ -4,6 +4,7 @@ export default function BottomNavigationBar() {
   const [activeTab, setActiveTab] = useState("home");
   const [isVisible, setIsVisible] = useState(true);
 
+  // Định nghĩa các tab của thanh điều hướng
   const tabs = [
     {
       id: "home",
@@ -48,6 +49,27 @@ export default function BottomNavigationBar() {
       gradient: "from-green-500 to-teal-400"
     },
     {
+      id: "story",
+      label: "Truyện",
+      icon: (props) => (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width={props.size}
+          height={props.size}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke={props.color}
+          strokeWidth={props.strokeWidth}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+          <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+        </svg>
+      ),
+      gradient: "from-amber-500 to-yellow-300"
+    },
+    {
       id: "game",
       label: "Mini Game",
       icon: (props) => (
@@ -72,27 +94,6 @@ export default function BottomNavigationBar() {
       gradient: "from-red-500 to-orange-400"
     },
     {
-      id: "story",
-      label: "Truyện",
-      icon: (props) => (
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width={props.size}
-          height={props.size}
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke={props.color}
-          strokeWidth={props.strokeWidth}
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
-          <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
-        </svg>
-      ),
-      gradient: "from-amber-500 to-yellow-300"
-    },
-    {
       id: "profile",
       label: "Hồ sơ",
       icon: (props) => (
@@ -115,22 +116,26 @@ export default function BottomNavigationBar() {
     },
   ];
 
+  // Hàm xử lý ẩn/hiện thanh điều hướng
   const toggleVisibility = () => {
     setIsVisible(!isVisible);
   };
 
   return (
     <div className="fixed bottom-0 left-0 right-0 flex flex-col items-center">
-      {/* Nút bật tắt thanh điều hướng với hiệu ứng tinh tế */}
-      <div
-        className="relative flex justify-center"
-        onClick={toggleVisibility}
-      >
-        <div className="absolute -top-3 w-12 h-6 bg-gray-900 bg-opacity-80 backdrop-blur-md rounded-full flex justify-center items-center cursor-pointer shadow-lg border border-gray-800 transform transition-transform duration-300 hover:scale-105">
-          <div className="w-4 h-4 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 glow-sm"></div>
-          <div className={`absolute w-6 h-1 bg-white bg-opacity-60 rounded-full transform transition-all duration-300 ${isVisible ? 'rotate-0' : 'rotate-90'}`}></div>
+      {/* Nút bật tắt thanh điều hướng chỉ hiển thị khi activeTab là 'story' */}
+      {activeTab === 'story' && (
+        <div
+          className="relative flex justify-center"
+          onClick={toggleVisibility}
+        >
+          <div className="absolute -top-3 w-12 h-6 bg-gray-900 bg-opacity-80 backdrop-blur-md rounded-full flex justify-center items-center cursor-pointer shadow-lg border border-gray-800 transform transition-transform duration-300 hover:scale-105">
+            <div className="w-4 h-4 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 glow-sm"></div>
+            <div className={`absolute w-6 h-1 bg-white bg-opacity-60 rounded-full transform transition-all duration-300 ${isVisible ? 'rotate-0' : 'rotate-90'}`}></div>
+          </div>
         </div>
-      </div>
+      )}
+
 
       {/* Thanh tab với hiệu ứng ẩn hiện */}
       <div
@@ -147,7 +152,13 @@ export default function BottomNavigationBar() {
               <div key={tab.id} className="flex-1 relative flex justify-center items-center">
                 <button
                   className="w-full flex flex-col items-center relative group justify-center"
-                  onClick={() => setActiveTab(tab.id)}
+                  onClick={() => {
+                    setActiveTab(tab.id);
+                    // Khi chuyển tab, nếu không phải 'story', đảm bảo thanh điều hướng hiển thị
+                    if (tab.id !== 'story') {
+                      setIsVisible(true);
+                    }
+                  }}
                 >
                   {/* Hiệu ứng phát sáng nền luôn hiện nhưng chỉ hiển thị khi active */}
                   <div
