@@ -1,5 +1,4 @@
 import { useRef, useState, useEffect } from 'react';
-import NavigationBar from './navigation-bar-bottom.tsx'; // Import NavigationBar
 
 // Sample data for flashcards
 const sampleFlashcards = [
@@ -914,11 +913,7 @@ export default function VerticalFlashcardGallery() {
         </>
       )}
 
-      {/* Thêm NavigationBar ở đây */}
-      {/* Fixed position at the bottom */}
-      <div className="fixed bottom-0 left-0 right-0 z-30"> {/* Added z-30 to ensure it's above content but below modals */}
-        <NavigationBar />
-      </div>
+      
     </div>
   );
 }
