@@ -6,5 +6,5 @@ import Profile from './profile.tsx';
 
 const container = document.getElementById('root');
 if (!container) throw new Error('Root not found');
-createRoot(container).render(<VerticalFlashcardGallery />);
+createRoot(container).render(<NavigationBarBottom />);
     
